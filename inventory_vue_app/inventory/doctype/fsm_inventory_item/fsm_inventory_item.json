@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-05-12 21:27:31.031005",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "barcode",
+  "buying_price",
+  "selling_price",
+  "value_offset",
+  "counted_qty",
+  "expected_qty",
+  "qty_offset",
+  "is_scanned",
+  "scanned_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "barcode",
+   "fieldtype": "Data",
+   "label": "Barcode",
+   "read_only": 1
+  },
+  {
+   "fieldname": "buying_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Buying Price",
+   "reqd": 1
+  },
+  {
+   "fieldname": "selling_price",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Selling Price",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "counted_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Counted Qty",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expected_qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Expected Qty",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_scanned",
+   "fieldtype": "Check",
+   "label": "Is Scanned",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "scanned_at",
+   "fieldtype": "Datetime",
+   "label": "Scanned At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "value_offset",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Value Offset",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "qty_offset",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty Offset",
+   "read_only": 1,
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-05-12 23:53:08.952139",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "FSM Inventory Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

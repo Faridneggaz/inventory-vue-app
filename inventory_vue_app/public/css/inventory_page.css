@@ -1,0 +1,33 @@
+#inventory-app{
+	background: red;
+}
+#inventory-app{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 1000;
+}
+
+
+.sticky-top{
+	display: none;
+}
+.page-head {
+	display: none;
+}
+.inventory-container {
+	height: 100vh;
+	width: 100%;
+	/*background: #f5f7fa;*/
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.inventory-input {
+	width: 300px;
+}

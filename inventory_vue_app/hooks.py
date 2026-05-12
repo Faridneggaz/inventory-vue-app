@@ -242,3 +242,41 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+
+
+
+
+fixtures = [
+    {
+        'dt': 'DocType',
+        'filters': [
+            ["istable" , "=" ,  1],
+            ["module" , "in" , ["inventory_vue_app"]],
+        ]
+    },
+    {
+        'dt': 'Custom Field',
+        'filters': [
+            ["module" , "in" , ["inventory_vue_app"]],
+        ]
+    },
+    {
+        'dt': 'Client Script',
+        'filters': [
+            ["module" , "in" , ["inventory_vue_app"]],
+        ]
+    },
+    {
+        'dt': 'Server Script',
+        'filters': [
+            ["module" , "in" , ["inventory_vue_app"]],
+        ]
+    },
+    {
+        'dt': 'Report',
+        'filters': [
+            ["module" , "in" , ["inventory_vue_app"]],
+        ]
+    }
+]

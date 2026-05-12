@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2026-05-12 19:54:40.519311",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-05-12 19:54:40.519311",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "inventory-page",
+ "owner": "Administrator",
+ "page_name": "inventory-page",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Iventory Page"
+}

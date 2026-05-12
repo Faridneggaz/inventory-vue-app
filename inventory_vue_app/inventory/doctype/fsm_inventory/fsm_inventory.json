@@ -1,0 +1,222 @@
+{
+ "actions": [],
+ "autoname": "format:{inventory_reference}",
+ "creation": "2026-05-12 21:16:45.702416",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "inventory_reference",
+  "warehouse",
+  "column_break_ykec",
+  "buying_price_list",
+  "starting_date",
+  "column_break_tgzj",
+  "selling_price_list",
+  "end_date",
+  "section_break_0e55",
+  "group",
+  "column_break_yj7d",
+  "total_counted_qty",
+  "column_break_5hyj",
+  "total_expected_qty",
+  "column_break_trjr",
+  "total_qty_offset",
+  "column_break_wuf3",
+  "stock_reconciliation",
+  "items_section",
+  "scan_input",
+  "fsm_inventory_item",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "inventory_reference",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Inventory Reference",
+   "no_copy": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "starting_date",
+   "fieldtype": "Datetime",
+   "label": "Starting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Warehouse",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Family",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "stock_reconciliation",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Stock Reconciliation",
+   "options": "Stock Reconciliation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "buying_price_list",
+   "fieldtype": "Link",
+   "label": "Buying Price List",
+   "options": "Price List",
+   "reqd": 1
+  },
+  {
+   "fieldname": "selling_price_list",
+   "fieldtype": "Link",
+   "label": "Selling Price List",
+   "options": "Price List",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ykec",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_tgzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_0e55",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_yj7d",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_5hyj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wuf3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "fsm_inventory_item",
+   "fieldtype": "Table",
+   "options": "FSM Inventory Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scan_input",
+   "fieldtype": "Data",
+   "label": "Please scan here"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "FSM Inventory",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_counted_qty",
+   "fieldtype": "Float",
+   "label": "Total Counted QTY",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_expected_qty",
+   "fieldtype": "Float",
+   "label": "Total Expected QTY",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_trjr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_qty_offset",
+   "fieldtype": "Float",
+   "label": "Total Qty Offset",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-05-12 23:59:52.711444",
+ "modified_by": "Administrator",
+ "module": "Inventory",
+ "name": "FSM Inventory",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Stock User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
