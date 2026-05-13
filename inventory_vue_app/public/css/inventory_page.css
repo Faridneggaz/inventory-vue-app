@@ -191,6 +191,14 @@
 	color: #9ca3af;
 }
 
+.offset-info {
+	color: #ef4444;
+	font-weight: 600;
+	margin-top: 8px;
+	padding-top: 4px;
+	border-top: 1px dashed #fee2e2;
+}
+
 .reco-link {
 	color: #3b82f6;
 	font-weight: 500;
@@ -271,6 +279,20 @@
 	font-size: 16px;
 	font-weight: 600;
 	color: #111827;
+}
+
+.info-card.highlight {
+	background: #fef2f2;
+	border-color: #fecaca;
+}
+
+.info-card.highlight label {
+	color: #991b1b;
+}
+
+.info-card.highlight .value {
+	color: #dc2626;
+	font-size: 20px;
 }
 
 .linked-record {
@@ -357,6 +379,31 @@
 .empty-selection p {
 	margin: 0;
 	font-size: 14px;
+}
+
+/* ===== Loading State ===== */
+
+.loading-state {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #6b7280;
+}
+
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 3px solid #f3f4f6;
+	border-top-color: #3b82f6;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+	margin-bottom: 16px;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
 }
 
 

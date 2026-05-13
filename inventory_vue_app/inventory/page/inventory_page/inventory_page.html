@@ -44,9 +44,19 @@
 						[[ inventory.warehouse ]]
 					</div>
 
+					<div v-if="inventory.group" class="detail-row">
+						<i class="fa fa-tag"></i>
+						[[ inventory.group ]]
+					</div>
+
 					<div class="detail-row">
 						<i class="fa fa-calendar-alt"></i>
 						[[ inventory.starting_date ]]
+					</div>
+
+					<div class="detail-row offset-info">
+						<i class="fa fa-calculator"></i>
+						Offset: [[ inventory.total_qty_offset ]]
 					</div>
 
 				</div>
@@ -69,7 +79,14 @@
 
 	</div>
 	<div class="inventory-content">
-		<div v-if="hasSelected()" class="detail-container">
+		<!-- Loading State -->
+		<div v-if="hasLoading()" class="loading-state">
+			<div class="spinner"></div>
+			<p>Loading inventory details...</p>
+		</div>
+
+		<!-- Detail View -->
+		<div v-else-if="hasSelected()" class="detail-container">
 			<div class="detail-header">
 				<div class="header-left">
 					<h2 class="title">[[ currentInventory.name ]]</h2>
@@ -92,6 +109,10 @@
 						<label>Warehouse</label>
 						<div class="value">[[ currentInventory.warehouse ]]</div>
 					</div>
+					<div v-if="currentInventory.group" class="info-card">
+						<label>Family</label>
+						<div class="value">[[ currentInventory.group ]]</div>
+					</div>
 					<div class="info-card">
 						<label>Starting Date</label>
 						<div class="value">[[ currentInventory.starting_date ]]</div>
@@ -99,6 +120,10 @@
 					<div class="info-card">
 						<label>End Date</label>
 						<div class="value">[[ currentInventory.end_date ]]</div>
+					</div>
+					<div class="info-card highlight">
+						<label>Total Qty Offset</label>
+						<div class="value">[[ currentInventory.total_qty_offset ]]</div>
 					</div>
 				</div>
 
@@ -114,18 +139,20 @@
 							<thead>
 								<tr>
 									<th>Item Code</th>
-									<th>Warehouse</th>
-									<th class="text-right">Qty</th>
+									<th class="text-right">Counted Qty</th>
+									<th class="text-right">Expected Qty</th>
+									<th class="text-right">Offset</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="item in currentInventory.items" :key="item.name">
+								<tr v-for="item in currentInventory.fsm_inventory_item" :key="item.name">
 									<td>[[ item.item_code ]]</td>
-									<td>[[ item.warehouse ]]</td>
-									<td class="text-right">[[ item.qty ]]</td>
+									<td class="text-right">[[ item.counted_qty ]]</td>
+									<td class="text-right">[[ item.expected_qty ]]</td>
+									<td class="text-right">[[ item.qty_offset ]]</td>
 								</tr>
 								<tr v-if="hasNoItems()">
-									<td colspan="3" class="text-center text-muted">No items found in this inventory.</td>
+									<td colspan="4" class="text-center text-muted">No items found in this inventory.</td>
 								</tr>
 							</tbody>
 						</table>

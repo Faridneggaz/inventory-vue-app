@@ -14,7 +14,8 @@ window.start_inventory_app = function() {
 
 					inventories: [],
 					sidebarVisible: true,
-					currentInventory: null
+					currentInventory: null,
+					loadingDetail: false
 
 				}
 
@@ -38,11 +39,16 @@ window.start_inventory_app = function() {
 					return this.currentInventory !== null;
 				},
 
+				hasLoading() {
+					return this.loadingDetail === true;
+				},
+
 				hasNoItems() {
-					return !this.currentInventory || !this.currentInventory.items || this.currentInventory.items.length === 0;
+					return !this.currentInventory || !this.currentInventory.fsm_inventory_item || this.currentInventory.fsm_inventory_item.length === 0;
 				},
 
 				async selectInventory(inventory) {
+					this.loadingDetail = true;
 					try {
 						const response = await frappe.call({
 							method: 'frappe.client.get',
@@ -56,6 +62,11 @@ window.start_inventory_app = function() {
 					} catch (e) {
 						console.error(e);
 						frappe.msgprint('Failed to load inventory details');
+					} finally {
+						// Small delay for better UX
+						setTimeout(() => {
+							this.loadingDetail = false;
+						}, 300);
 					}
 				},
 
@@ -65,7 +76,7 @@ window.start_inventory_app = function() {
 						starting_date: frappe.datetime.nowdate(),
 						end_date: frappe.datetime.nowdate(),
 						warehouse: '',
-						items: []
+						fsm_inventory_item: []
 					};
 					frappe.show_alert({message: __('New Inventory Created'), indicator: 'blue'});
 				},
@@ -112,7 +123,9 @@ window.start_inventory_app = function() {
 						'docstatus',
 						'starting_date',
 						'end_date',
-						'stock_reconciliation'
+						'stock_reconciliation',
+						'group',
+						'total_qty_offset'
 					],
 
 					order_by: 'creation desc'
