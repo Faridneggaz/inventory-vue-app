@@ -15,7 +15,12 @@ window.start_inventory_app = function() {
 					inventories: [],
 					sidebarVisible: true,
 					currentInventory: null,
-					loadingDetail: false
+					loadingDetail: false,
+
+					// System Master Data
+					warehouses: [],
+					families: [],
+					priceLists: []
 
 				}
 
@@ -23,11 +28,30 @@ window.start_inventory_app = function() {
 
 			async mounted() {
 
-				await this.loadInventories();
+				await Promise.all([
+					this.loadInventories(),
+					this.loadMasterData()
+				]);
 
 			},
 
 			methods: {
+
+				async loadMasterData() {
+					try {
+						const [wh, ig, pl] = await Promise.all([
+							frappe.db.get_list('Warehouse', { fields: ['name'], order_by: 'name asc', limit: 500 }),
+							frappe.db.get_list('Item Group', { fields: ['name'], order_by: 'name asc', limit: 500 }),
+							frappe.db.get_list('Price List', { fields: ['name'], order_by: 'name asc', limit: 100 })
+						]);
+
+						this.warehouses = wh || [];
+						this.families = ig || [];
+						this.priceLists = pl || [];
+					} catch (e) {
+						console.error("Error loading master data:", e);
+					}
+				},
 
 				toggleSidebar() { this.sidebarVisible = !this.sidebarVisible; },
 
@@ -45,6 +69,10 @@ window.start_inventory_app = function() {
 
 				hasNoItems() {
 					return !this.currentInventory || !this.currentInventory.fsm_inventory_item || this.currentInventory.fsm_inventory_item.length === 0;
+				},
+
+				isEditable() {
+					return this.currentInventory && (this.currentInventory.docstatus === 0 || !this.currentInventory.name);
 				},
 
 				async selectInventory(inventory) {
@@ -73,10 +101,14 @@ window.start_inventory_app = function() {
 				addInventory() {
 					this.currentInventory = {
 						doctype: 'FSM Inventory',
-						starting_date: frappe.datetime.nowdate(),
-						end_date: frappe.datetime.nowdate(),
+						starting_date: frappe.datetime.now_datetime(),
+						end_date: frappe.datetime.now_datetime(),
 						warehouse: '',
-						fsm_inventory_item: []
+						group: '',
+						buying_price_list: 'Standard Buying',
+						selling_price_list: 'Standard Selling',
+						fsm_inventory_item: [],
+						docstatus: 0
 					};
 					frappe.show_alert({message: __('New Inventory Created'), indicator: 'blue'});
 				},

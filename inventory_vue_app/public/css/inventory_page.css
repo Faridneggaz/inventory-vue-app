@@ -281,6 +281,31 @@
 	color: #111827;
 }
 
+.input-wrapper {
+	margin-top: 4px;
+}
+
+.form-control-custom {
+	width: 100%;
+	padding: 8px 12px;
+	font-size: 14px;
+	border: 1px solid #d1d8dd;
+	border-radius: 6px;
+	background: white;
+	color: #111827;
+	transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-custom:focus {
+	border-color: #3b82f6;
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-control-custom::placeholder {
+	color: #9ca3af;
+}
+
 .info-card.highlight {
 	background: #fef2f2;
 	border-color: #fecaca;
