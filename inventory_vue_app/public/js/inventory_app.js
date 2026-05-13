@@ -30,6 +30,35 @@ window.start_inventory_app = function() {
 
 				toggleSidebar() { this.sidebarVisible = !this.sidebarVisible; },
 
+				isCurrent(name) {
+					return this.currentInventory && this.currentInventory.name === name;
+				},
+
+				hasSelected() {
+					return this.currentInventory !== null;
+				},
+
+				hasNoItems() {
+					return !this.currentInventory || !this.currentInventory.items || this.currentInventory.items.length === 0;
+				},
+
+				async selectInventory(inventory) {
+					try {
+						const response = await frappe.call({
+							method: 'frappe.client.get',
+							args: {
+								doctype: 'FSM Inventory',
+								name: inventory.name
+							}
+						});
+						this.currentInventory = response.message;
+						console.log("Selected Inventory:", this.currentInventory);
+					} catch (e) {
+						console.error(e);
+						frappe.msgprint('Failed to load inventory details');
+					}
+				},
+
 				addInventory() {
 					this.currentInventory = {
 						doctype: 'FSM Inventory',
@@ -39,6 +68,14 @@ window.start_inventory_app = function() {
 						items: []
 					};
 					frappe.show_alert({message: __('New Inventory Created'), indicator: 'blue'});
+				},
+
+				async saveInventory() {
+					frappe.msgprint('Save logic coming soon...');
+				},
+
+				async submitInventory() {
+					frappe.msgprint('Submit logic coming soon...');
 				},
 
 				getStatusLabel(docstatus) {

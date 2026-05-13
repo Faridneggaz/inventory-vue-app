@@ -19,41 +19,39 @@
 				v-for="inventory in inventories"
 				:key="inventory.name"
 				class="inventory-item"
+				:class="{ active: isCurrent(inventory.name) }"
+				@click="selectInventory(inventory)"
 			>
-	<div class="item-main">
+				<div class="item-main">
 
-		<div class="inventory-name">
-			[[ inventory.name ]]
-		</div>
+					<div class="inventory-name">
+						[[ inventory.name ]]
+					</div>
 
-		<div
-			class="inventory-status-badge"
-			:class="getStatusClass(inventory.docstatus)"
-		>
-			[[ getStatusLabel(inventory.docstatus) ]]
-		</div>
+					<div
+						class="inventory-status-badge"
+						:class="getStatusClass(inventory.docstatus)"
+					>
+						[[ getStatusLabel(inventory.docstatus) ]]
+					</div>
 
-	</div>
+				</div>
 
-	<div class="item-details">
+				<div class="item-details">
 
-		<div class="detail-row">
-			<i class="fa fa-warehouse"></i>
-			[[ inventory.warehouse ]]
-		</div>
+					<div class="detail-row">
+						<i class="fa fa-warehouse"></i>
+						[[ inventory.warehouse ]]
+					</div>
 
-		<div class="detail-row">
-			<i class="fa fa-calendar-alt"></i>
-			[[ inventory.starting_date ]]
-		</div>
+					<div class="detail-row">
+						<i class="fa fa-calendar-alt"></i>
+						[[ inventory.starting_date ]]
+					</div>
 
-	</div>
+				</div>
 
-</div>
-
-</div>
-
-		<div class="sidebar-body">
+			</div>
 
 		</div>
 
@@ -71,7 +69,78 @@
 
 	</div>
 	<div class="inventory-content">
+		<div v-if="hasSelected()" class="detail-container">
+			<div class="detail-header">
+				<div class="header-left">
+					<h2 class="title">[[ currentInventory.name ]]</h2>
+					<div 
+						class="status-pill" 
+						:class="getStatusClass(currentInventory.docstatus)"
+					>
+						[[ getStatusLabel(currentInventory.docstatus) ]]
+					</div>
+				</div>
+				<div class="header-right">
+					<button v-if="currentInventory.docstatus === 0" class="btn btn-primary" @click="saveInventory">Save</button>
+					<button v-if="currentInventory.docstatus === 0" class="btn btn-success" @click="submitInventory">Submit</button>
+				</div>
+			</div>
 
+			<div class="detail-body">
+				<div class="info-grid">
+					<div class="info-card">
+						<label>Warehouse</label>
+						<div class="value">[[ currentInventory.warehouse ]]</div>
+					</div>
+					<div class="info-card">
+						<label>Starting Date</label>
+						<div class="value">[[ currentInventory.starting_date ]]</div>
+					</div>
+					<div class="info-card">
+						<label>End Date</label>
+						<div class="value">[[ currentInventory.end_date ]]</div>
+					</div>
+				</div>
+
+				<div v-if="currentInventory.stock_reconciliation" class="linked-record">
+					<label>Linked Stock Reconciliation</label>
+					<div class="reco-id">[[ currentInventory.stock_reconciliation ]]</div>
+				</div>
+
+				<div class="items-section">
+					<h3 class="section-title">Inventory Items</h3>
+					<div class="table-responsive">
+						<table class="table table-bordered custom-table">
+							<thead>
+								<tr>
+									<th>Item Code</th>
+									<th>Warehouse</th>
+									<th class="text-right">Qty</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr v-for="item in currentInventory.items" :key="item.name">
+									<td>[[ item.item_code ]]</td>
+									<td>[[ item.warehouse ]]</td>
+									<td class="text-right">[[ item.qty ]]</td>
+								</tr>
+								<tr v-if="hasNoItems()">
+									<td colspan="3" class="text-center text-muted">No items found in this inventory.</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div v-else class="empty-selection">
+			<div class="empty-icon">
+				<i class="fa fa-clipboard-list"></i>
+			</div>
+			<h3>No Inventory Selected</h3>
+			<p>Select a record from the sidebar to view its details.</p>
+		</div>
 	</div>
 
 </div>
