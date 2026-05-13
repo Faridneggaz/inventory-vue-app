@@ -1,5 +1,9 @@
 import frappe
 
+from frappe.model.document import Document
+
+
+
 @frappe.whitelist()
 def get_items_with_details(item_group=None, warehouse=None, buying_price_list=None, selling_price_list=None):
     query = """
@@ -33,3 +37,15 @@ def get_items_with_details(item_group=None, warehouse=None, buying_price_list=No
         values["item_group"] = item_group
 
     return frappe.db.sql(query, values, as_dict=True)
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,20 +1,77 @@
-<div
-	id="inventory-app"
-	class="inventory-container"
->
+<div id="inventory-app" class="inventory-layout">
 
-	<h1>Inventory Page</h1>
-
-	<input
-		v-model="name"
-		class="form-control inventory-input"
+	<!-- Sidebar -->
+	<div
+		class="inventory-sidebar"
+		:class="{ hidden: !sidebarVisible }"
 	>
 
-	<button
-		class="btn btn-primary mt-3"
-		@click="hello"
-	>
-		Say Hello
-	</button>
+		<div class="sidebar-header">
+			<div class="header-title">Inventories</div>
+			<button class="create-btn" @click="addInventory">
+				<i class="fa fa-plus"></i> New
+			</button>
+		</div>
+
+		<div class="sidebar-body">
+
+			<div
+				v-for="inventory in inventories"
+				:key="inventory.name"
+				class="inventory-item"
+			>
+	<div class="item-main">
+
+		<div class="inventory-name">
+			[[ inventory.name ]]
+		</div>
+
+		<div
+			class="inventory-status-badge"
+			:class="getStatusClass(inventory.docstatus)"
+		>
+			[[ getStatusLabel(inventory.docstatus) ]]
+		</div>
+
+	</div>
+
+	<div class="item-details">
+
+		<div class="detail-row">
+			<i class="fa fa-warehouse"></i>
+			[[ inventory.warehouse ]]
+		</div>
+
+		<div class="detail-row">
+			<i class="fa fa-calendar-alt"></i>
+			[[ inventory.starting_date ]]
+		</div>
+
+	</div>
+
+</div>
+
+</div>
+
+		<div class="sidebar-body">
+
+		</div>
+
+	</div>
+
+	<!-- Main Content -->
+
+	<div class="content-toolbar">
+		<button
+			class="inventory-toggle-btn"
+			@click="toggleSidebar"
+		>
+			<i class="fa fa-bars"></i>
+		</button>
+
+	</div>
+	<div class="inventory-content">
+
+	</div>
 
 </div>
