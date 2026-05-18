@@ -252,31 +252,31 @@ fixtures = [
         'dt': 'DocType',
         'filters': [
             ["istable" , "=" ,  1],
-            ["module" , "in" , ["inventory_vue_app"]],
+            ["module" , "in" , ["Inventory"]],
         ]
     },
     {
         'dt': 'Custom Field',
         'filters': [
-            ["module" , "in" , ["inventory_vue_app"]],
+            ["module" , "in" , ["Inventory"]],
         ]
     },
     {
         'dt': 'Client Script',
         'filters': [
-            ["module" , "in" , ["inventory_vue_app"]],
+            ["module" , "in" , ["Inventory"]],
         ]
     },
     {
         'dt': 'Server Script',
         'filters': [
-            ["module" , "in" , ["inventory_vue_app"]],
+            ["module" , "in" , ["Inventory"]],
         ]
     },
     {
         'dt': 'Report',
         'filters': [
-            ["module" , "in" , ["inventory_vue_app"]],
+            ["module" , "in" , ["Inventory"]],
         ]
     }
 ]
