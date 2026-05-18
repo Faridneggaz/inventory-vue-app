@@ -1,28 +1,42 @@
+"""
+Inventory API Module
+Provides server-side logic for fetching item details with stock and pricing information.
+"""
 import frappe
-
 from frappe.model.document import Document
-
-
 
 @frappe.whitelist()
 def get_items_with_details(item_group=None, warehouse=None, buying_price_list=None, selling_price_list=None):
+    """
+    Retrieves a comprehensive list of items including current stock (Bin),
+    barcodes, and pricing from specified price lists.
+
+    Args:
+        item_group (str, optional): Filter by Item Group.
+        warehouse (str, optional): Filter stock levels for this warehouse.
+        buying_price_list (str, optional): Price list for purchase rates.
+        selling_price_list (str, optional): Price list for sales rates.
+
+    Returns:
+        list[dict]: List of item dictionaries with code, name, barcode, qty, and rates.
+    """
     query = """
-        SELECT 
+        SELECT
             item.name as item_code,
             item.item_name as item_name,
             (SELECT barcode FROM `tabItem Barcode` WHERE parent = item.name LIMIT 1) as barcode,
             IFNULL(bin.actual_qty, 0) as qty,
             IFNULL(bp.price_list_rate, 0) as buying_rate,
             IFNULL(sp.price_list_rate, 0) as selling_rate
-        FROM 
+        FROM
             `tabItem` item
-        LEFT JOIN 
+        LEFT JOIN
             `tabBin` bin ON bin.item_code = item.name AND bin.warehouse = %(warehouse)s
-        LEFT JOIN 
+        LEFT JOIN
             `tabItem Price` bp ON bp.item_code = item.name AND bp.price_list = %(buying_list)s
-        LEFT JOIN 
+        LEFT JOIN
             `tabItem Price` sp ON sp.item_code = item.name AND sp.price_list = %(selling_list)s
-        WHERE 
+        WHERE
             item.disabled = 0
     """
     

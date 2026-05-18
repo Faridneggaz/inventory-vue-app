@@ -70,8 +70,10 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Stock Reconciliation",
+   "no_copy": 1,
    "options": "Stock Reconciliation",
-   "read_only": 1
+   "read_only": 1,
+   "unique": 1
   },
   {
    "fieldname": "buying_price_list",
@@ -167,8 +169,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-12 23:59:52.711444",
- "modified_by": "Administrator",
+ "modified": "2026-05-18 16:58:16.947486",
+ "modified_by": "rayanaouf1512@gmail.com",
  "module": "Inventory",
  "name": "FSM Inventory",
  "naming_rule": "Expression",
