@@ -152,7 +152,11 @@
 					<div class="info-card">
 						<label>Buying Price List</label>
 						<div v-if="isEditable()" class="input-wrapper">
-							<select v-model="currentInventory.buying_price_list" class="form-control-custom">
+							<select 
+								v-model="currentInventory.buying_price_list" 
+								class="form-control-custom"
+								@change="fetchWarehouseItems"
+							>
 								<option v-for="pl in priceLists" :key="pl.name" :value="pl.name">[[ pl.name ]]</option>
 							</select>
 						</div>
@@ -163,7 +167,11 @@
 					<div class="info-card">
 						<label>Selling Price List</label>
 						<div v-if="isEditable()" class="input-wrapper">
-							<select v-model="currentInventory.selling_price_list" class="form-control-custom">
+							<select 
+								v-model="currentInventory.selling_price_list" 
+								class="form-control-custom"
+								@change="fetchWarehouseItems"
+							>
 								<option v-for="pl in priceLists" :key="pl.name" :value="pl.name">[[ pl.name ]]</option>
 							</select>
 						</div>

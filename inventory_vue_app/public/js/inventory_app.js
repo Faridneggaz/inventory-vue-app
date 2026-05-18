@@ -35,6 +35,22 @@ window.start_inventory_app = function() {
 
 			},
 
+			watch: {
+				'currentInventory.warehouse'(val) {
+					console.log('Warehouse changed:', val);
+					if (val && this.isEditable()) {
+						this.fetchWarehouseItems();
+					}
+				},
+
+				'currentInventory.group'(val) {
+					console.log('Group changed:', val);
+					if (this.currentInventory?.warehouse && this.isEditable()) {
+						this.fetchWarehouseItems();
+					}
+				}
+			},
+
 			methods: {
 
 				async loadMasterData() {
@@ -75,6 +91,45 @@ window.start_inventory_app = function() {
 					return this.currentInventory && (this.currentInventory.docstatus === 0 || !this.currentInventory.name);
 				},
 
+				async fetchWarehouseItems() {
+					if (!this.currentInventory.warehouse) return;
+
+					this.loadingDetail = true;
+					try {
+						const response = await frappe.call({
+							method: 'inventory_vue_app.api.get_items_with_details',
+							args: {
+								warehouse: this.currentInventory.warehouse,
+								item_group: this.currentInventory.group,
+								buying_price_list: this.currentInventory.buying_price_list,
+								selling_price_list: this.currentInventory.selling_price_list
+							}
+						});
+						
+						const items = response.message || [];
+						this.currentInventory.fsm_inventory_item = items.map(item => ({
+							item_code: item.item_code,
+							item_name: item.item_name,
+							barcode: item.barcode,
+							expected_qty: item.qty || 0,
+							counted_qty: 0,
+							qty_offset: -(item.qty || 0),
+							buying_price: item.buying_rate || 0,
+							selling_price: item.selling_rate || 0
+						}));
+						
+						frappe.show_alert({
+							message: __('{0} items loaded with prices', [this.currentInventory.fsm_inventory_item.length]),
+							indicator: 'green'
+						});
+					} catch (e) {
+						console.error(e);
+						frappe.msgprint('Failed to fetch items with details');
+					} finally {
+						this.loadingDetail = false;
+					}
+				},
+
 				async selectInventory(inventory) {
 					this.loadingDetail = true;
 					try {
@@ -86,6 +141,14 @@ window.start_inventory_app = function() {
 							}
 						});
 						this.currentInventory = response.message;
+						// AUTO LOAD ITEMS IF EMPTY
+						if (
+							this.currentInventory.docstatus === 0 &&
+							(!this.currentInventory.fsm_inventory_item ||
+							 this.currentInventory.fsm_inventory_item.length === 0)
+						) {
+							await this.fetchWarehouseItems();
+						}
 						console.log("Selected Inventory:", this.currentInventory);
 					} catch (e) {
 						console.error(e);
