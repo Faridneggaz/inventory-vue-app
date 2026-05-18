@@ -241,7 +241,18 @@
 									:class="getQtyClass(item.qty_offset)"
 								>
 									<td>[[ item.item_code ]]</td>
-									<td class="text-right">[[ item.counted_qty ]]</td>
+									<td class="text-right td-input">
+										<div v-if="isEditable()" class="input-wrapper-table">
+											<input 
+												type="number" 
+												v-model.number="item.counted_qty" 
+												class="table-input"
+												@input="item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0))"
+												min="0"
+											>
+										</div>
+										<div v-else class="value">[[ item.counted_qty || 0 ]]</div>
+									</td>
 									<td class="text-right">[[ item.expected_qty ]]</td>
 									<td class="text-right">[[ item.qty_offset ]]</td>
 								</tr>
