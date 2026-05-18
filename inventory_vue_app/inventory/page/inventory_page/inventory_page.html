@@ -106,6 +106,20 @@
 
 			<div class="detail-body">
 				<div class="info-grid">
+					<!-- Ref -->
+					<div class="info-card">
+						<label>Ref</label>
+						<div v-if="isEditable()" class="input-wrapper">
+							<input 
+								type="text" 
+								v-model="currentInventory.inventory_reference" 
+								class="form-control-custom"
+								placeholder="Enter reference..."
+							>
+						</div>
+						<div v-else class="value">[[ currentInventory.inventory_reference ]]</div>
+					</div>
+
 					<!-- Warehouse -->
 					<div class="info-card">
 						<label>Warehouse</label>
@@ -183,20 +197,6 @@
 					<div class="info-card highlight">
 						<label>Total Qty Offset</label>
 						<div class="value">[[ currentInventory.total_qty_offset || 0 ]]</div>
-					</div>
-
-					<!-- Ref -->
-					<div class="info-card">
-						<label>Ref</label>
-						<div v-if="true" class="input-wrapper">
-							<input 
-								type="text" 
-								v-model="currentInventory.inventory_reference" 
-								class="form-control-custom"
-								placeholder="Enter reference..."
-							>
-						</div>
-						<div v-else class="value">[[ currentInventory.inventory_reference  ]]</div>
 					</div>
 				</div>
 
