@@ -29,7 +29,8 @@ window.start_inventory_app = function() {
 
                     // State management
                     currentPage: 1,
-                    itemsPerPage: 50
+                    itemsPerPage: 50,
+                    searchQuery: ''
                 }
             },
 
@@ -105,18 +106,42 @@ window.start_inventory_app = function() {
                 },
 
                 /**
-                 * Slices the inventory items list based on current pagination state.
+                 * Returns the full list of items filtered by the current search query.
                  */
-                getPaginatedItems() {
+                getFilteredItems() {
                     if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) return [];
-                    const start = (this.currentPage - 1) * this.itemsPerPage;
-                    const end = start + this.itemsPerPage;
-                    return this.currentInventory.fsm_inventory_item.slice(start, end);
+                    const query = (this.searchQuery || '').toLowerCase().trim();
+                    if (!query) return this.currentInventory.fsm_inventory_item;
+
+                    return this.currentInventory.fsm_inventory_item.filter(item => {
+                        return (item.item_code || '').toLowerCase().includes(query) ||
+                               (item.item_name || '').toLowerCase().includes(query) ||
+                               (item.barcode || '').toLowerCase().includes(query);
+                    });
                 },
 
+                clearSearch() {
+                    this.searchQuery = '';
+                    this.currentPage = 1;
+                },
+
+                /**
+                 * Returns the subset of items for the current page, respecting search filters.
+                 */
+                getPaginatedItems() {
+                    const filtered = this.getFilteredItems();
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return filtered.slice(start, end);
+                },
+
+                /**
+                 * Calculates total pages based on the filtered items list.
+                 */
                 getTotalPages() {
-                    if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) return 0;
-                    return Math.ceil(this.currentInventory.fsm_inventory_item.length / this.itemsPerPage);
+                    const filtered = this.getFilteredItems();
+                    if (filtered.length === 0) return 1;
+                    return Math.ceil(filtered.length / this.itemsPerPage);
                 },
 
                 nextPage() {

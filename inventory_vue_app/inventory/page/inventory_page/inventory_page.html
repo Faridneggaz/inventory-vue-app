@@ -206,7 +206,22 @@
 				</div>
 
 				<div class="items-section">
-					<h3 class="section-title">Inventory Items</h3>
+					<div class="items-header-bar">
+						<h3 class="section-title">Inventory Items</h3>
+						<div class="table-search-box">
+							<i class="fa fa-search search-icon"></i>
+							<input 
+								type="text" 
+								v-model="searchQuery" 
+								class="search-input" 
+								placeholder="Search items by code, name or barcode..."
+								@input="currentPage = 1"
+							>
+							<button v-if="searchQuery" class="clear-search" @click="clearSearch">
+								<i class="fa fa-times"></i>
+							</button>
+						</div>
+					</div>
 					<div class="table-responsive">
 						<table class="table table-bordered custom-table">
 							<thead>
