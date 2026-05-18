@@ -214,6 +214,7 @@ window.start_inventory_app = function() {
                         end_date: frappe.datetime.now_datetime(),
                         warehouse: '',
                         group: '',
+                        inventory_reference: '',
                         buying_price_list: 'Standard Buying',
                         selling_price_list: 'Standard Selling',
                         fsm_inventory_item: [],

@@ -184,6 +184,20 @@
 						<label>Total Qty Offset</label>
 						<div class="value">[[ currentInventory.total_qty_offset || 0 ]]</div>
 					</div>
+
+					<!-- Ref -->
+					<div class="info-card">
+						<label>Ref</label>
+						<div v-if="true" class="input-wrapper">
+							<input 
+								type="text" 
+								v-model="currentInventory.inventory_reference" 
+								class="form-control-custom"
+								placeholder="Enter reference..."
+							>
+						</div>
+						<div v-else class="value">[[ currentInventory.inventory_reference  ]]</div>
+					</div>
 				</div>
 
 				<div v-if="currentInventory.stock_reconciliation" class="linked-record">
