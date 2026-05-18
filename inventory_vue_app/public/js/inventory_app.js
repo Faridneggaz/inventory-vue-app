@@ -355,21 +355,29 @@ window.start_inventory_app = function() {
 
 				/**
 				 * Redirects the user to the FSM Inventory DocType page.
+				 * Automatically saves the document first.
 				 */
 				async submitInventory() {
-					if (!this.currentInventory || !this.currentInventory.name) {
-						frappe.msgprint(__('Please save the record before proceeding.'));
-						return;
-					}
+					if (!this.currentInventory) return;
 
-					frappe.confirm(__('Are you sure you want to proceed to the system document?'), () => {
-						frappe.set_route('Form', 'FSM Inventory', this.currentInventory.name);
-						
-						// Perform a hard refresh after a tiny delay to ensure the route change has started
-						// This restores the ERPNext UI components effectively.
-						setTimeout(() => {
-							window.location.reload();
-						}, 100);
+					frappe.confirm(__('Save changes and proceed to the system document?'), async () => {
+						try {
+							// 1. Perform save first
+							await this.saveInventory();
+							
+							// 2. Only redirect if the save was successful (has a name)
+							if (this.currentInventory.name) {
+								frappe.set_route('Form', 'FSM Inventory', this.currentInventory.name);
+								
+								// Perform a hard refresh after a tiny delay
+								setTimeout(() => {
+									window.location.reload();
+								}, 100);
+							}
+						} catch (e) {
+							console.error("System View redirection failed:", e);
+							frappe.msgprint(__('Failed to save before redirection.'));
+						}
 					});
 				},
 
