@@ -35,6 +35,7 @@ window.start_inventory_app = function() {
             },
 
             async mounted() {
+                console.log('Vue app mounted and ready');
                 await Promise.all([
                     this.loadInventories(),
                     this.loadMasterData()
@@ -115,18 +116,21 @@ window.start_inventory_app = function() {
 
                 /**
                  * Handles barcode scanning or manual item code entry.
-                 * Increments Counted Qty if a match is found.
+                 * Increments Counted Qty if a match is found (case-insensitive).
                  */
                 handleBarcodeScan() {
+                    console.log('handleBarcodeScan triggered with input:', this.searchQuery);
                     if (!this.searchQuery) return;
                     
-                    const code = this.searchQuery.trim();
+                    const code = this.searchQuery.trim().toLowerCase();
                     const items = this.currentInventory.fsm_inventory_item || [];
                     
-                    // Find item by code or barcode
+					console.log('Searching for item with code:', code);
+                    // Find item by code, barcode, or name (case-insensitive match)
                     const item = items.find(i => 
-                        i.item_code === code || 
-                        i.barcode === code
+                        (i.item_code || '').toLowerCase() === code || 
+                        (i.barcode || '').toLowerCase() === code ||
+                        (i.item_name || '').toLowerCase() === code
                     );
 
                     if (item) {
@@ -142,7 +146,7 @@ window.start_inventory_app = function() {
                         this.searchQuery = '';
                     } else {
                         frappe.show_alert({
-                            message: __('Item {0} not found in this list', [code]),
+                            message: __('Item "{0}" not found in this list', [this.searchQuery.trim()]),
                             indicator: 'orange'
                         });
                     }

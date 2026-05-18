@@ -216,7 +216,9 @@
 								class="search-input" 
 								placeholder="Scan barcode or type item code..."
 								@keyup.enter="handleBarcodeScan"
+								ref="scannerInput"
 							>
+							
 							<button v-if="searchQuery" class="clear-search" @click="clearSearch">
 								<i class="fa fa-times"></i>
 							</button>
