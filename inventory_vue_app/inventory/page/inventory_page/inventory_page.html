@@ -204,7 +204,11 @@
 								</tr>
 							</thead>
 							<tbody>
-								<tr v-for="item in currentInventory.fsm_inventory_item" :key="item.name">
+								<tr 
+									v-for="item in getPaginatedItems()" 
+									:key="item.name"
+									:class="getQtyClass(item.qty_offset)"
+								>
 									<td>[[ item.item_code ]]</td>
 									<td class="text-right">[[ item.counted_qty ]]</td>
 									<td class="text-right">[[ item.expected_qty ]]</td>
@@ -215,6 +219,32 @@
 								</tr>
 							</tbody>
 						</table>
+					</div>
+
+					<!-- Pagination Controls -->
+					<div v-if="!hasNoItems()" class="pagination-container">
+						<div class="pagination-info">
+							Showing [[ (currentPage - 1) * itemsPerPage + 1 ]] to 
+							[[ Math.min(currentPage * itemsPerPage, (currentInventory.fsm_inventory_item || []).length) ]] 
+							of [[ (currentInventory.fsm_inventory_item || []).length ]] items
+						</div>
+						<div class="pagination-buttons">
+							<button 
+								class="btn-pagination" 
+								:disabled="currentPage === 1"
+								@click="prevPage"
+							>
+								<i class="fa fa-chevron-left"></i> Previous
+							</button>
+							<div class="page-number">Page [[ currentPage ]] of [[ getTotalPages() ]]</div>
+							<button 
+								class="btn-pagination" 
+								:disabled="currentPage === getTotalPages()"
+								@click="nextPage"
+							>
+								Next <i class="fa fa-chevron-right"></i>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

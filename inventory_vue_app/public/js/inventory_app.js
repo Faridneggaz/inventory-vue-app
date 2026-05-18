@@ -184,13 +184,14 @@ window.start_inventory_app = function() {
 					frappe.msgprint('Submit logic coming soon...');
 				},
 
+				getQtyClass(offset) {
+					if (offset != 0) return 'text-danger';
+					return '';
+				},
+
 				getStatusLabel(docstatus) {
-
-		return docstatus === 1
-			? 'Submitted'
-			: 'Draft';
-
-	},
+					return docstatus === 1 ? 'Submitted' : 'Draft';
+				},
 
 	getStatusClass(docstatus) {
 

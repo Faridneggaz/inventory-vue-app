@@ -413,6 +413,81 @@
 	vertical-align: middle;
 }
 
+/* Row-based coloring */
+.custom-table tr.text-danger {
+	background-color: rgba(220, 38, 38, 0.15) !important; /* Red background with 0.15 opacity */
+}
+
+.custom-table tr.text-danger td,
+.custom-table tr.text-danger td .value,
+.custom-table tr.text-danger td input {
+	color: #dc2626 !important;
+	font-weight: 600;
+	background: transparent !important; /* Ensure input doesn't hide row background */
+}
+
+.custom-table tr.text-success td,
+.custom-table tr.text-success td .value,
+.custom-table tr.text-success td input {
+	color: #16a34a !important;
+	font-weight: 600;
+}
+
+/* ===== Pagination ===== */
+
+.pagination-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 16px 0;
+	margin-top: 8px;
+	border-top: 1px solid #e5e7eb;
+}
+
+.pagination-info {
+	font-size: 13px;
+	color: #6b7280;
+}
+
+.pagination-buttons {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.btn-pagination {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 12px;
+	background: white;
+	border: 1px solid #d1d8dd;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 500;
+	color: #374151;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.btn-pagination:hover:not(:disabled) {
+	background: #f9fafb;
+	border-color: #3b82f6;
+	color: #3b82f6;
+}
+
+.btn-pagination:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: #f3f4f6;
+}
+
+.page-number {
+	font-size: 13px;
+	font-weight: 600;
+	color: #111827;
+}
+
 /* ===== Empty State ===== */
 
 .empty-selection {
