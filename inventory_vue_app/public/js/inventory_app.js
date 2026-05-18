@@ -137,6 +137,9 @@ window.start_inventory_app = function() {
                     if (item) {
                         item.counted_qty = (item.counted_qty || 0) + 1;
                         item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0));
+                        item.is_scanned = 1;
+                        item.scanned = 1;
+                        item.scanned_at = frappe.datetime.now_datetime();
                         
                         frappe.show_alert({
                             message: __('{0}: Counted {1}', [item.item_code, item.counted_qty]),
@@ -219,7 +222,10 @@ window.start_inventory_app = function() {
                                 counted_qty: 0,
                                 qty_offset: Math.abs(item.qty || 0),
                                 buying_price: item.buying_rate || 0,
-                                selling_price: item.selling_rate || 0
+                                selling_price: item.selling_rate || 0,
+                                is_scanned: 0,
+                                scanned: 0,
+                                scanned_at: null
                             }));
 
                             if (!silent) {

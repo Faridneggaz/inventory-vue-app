@@ -247,7 +247,7 @@
 												type="number" 
 												v-model.number="item.counted_qty" 
 												class="table-input"
-												@input="item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0))"
+												@input="item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0)); item.is_scanned = 1; item.scanned = 1; item.scanned_at = frappe.datetime.now_datetime();"
 												min="0"
 											>
 										</div>
