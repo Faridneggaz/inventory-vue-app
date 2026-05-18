@@ -20,7 +20,11 @@ window.start_inventory_app = function() {
 					// System Master Data
 					warehouses: [],
 					families: [],
-					priceLists: []
+					priceLists: [],
+
+					// Pagination
+					currentPage: 1,
+					itemsPerPage: 50
 
 				}
 
@@ -87,6 +91,31 @@ window.start_inventory_app = function() {
 					return !this.currentInventory || !this.currentInventory.fsm_inventory_item || this.currentInventory.fsm_inventory_item.length === 0;
 				},
 
+				// Pagination Methods
+				getPaginatedItems() {
+					if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) return [];
+					const start = (this.currentPage - 1) * this.itemsPerPage;
+					const end = start + this.itemsPerPage;
+					return this.currentInventory.fsm_inventory_item.slice(start, end);
+				},
+
+				getTotalPages() {
+					if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) return 0;
+					return Math.ceil(this.currentInventory.fsm_inventory_item.length / this.itemsPerPage);
+				},
+
+				nextPage() {
+					if (this.currentPage < this.getTotalPages()) {
+						this.currentPage++;
+					}
+				},
+
+				prevPage() {
+					if (this.currentPage > 1) {
+						this.currentPage--;
+					}
+				},
+
 				isEditable() {
 					return this.currentInventory && (this.currentInventory.docstatus === 0 || !this.currentInventory.name);
 				},
@@ -118,6 +147,8 @@ window.start_inventory_app = function() {
 							selling_price: item.selling_rate || 0
 						}));
 						
+						this.currentPage = 1; // Reset on data refresh
+						
 						frappe.show_alert({
 							message: __('{0} items loaded with prices', [this.currentInventory.fsm_inventory_item.length]),
 							indicator: 'green'
@@ -141,6 +172,7 @@ window.start_inventory_app = function() {
 							}
 						});
 						this.currentInventory = response.message;
+						this.currentPage = 1; // Reset on selection
 						// AUTO LOAD ITEMS IF EMPTY
 						if (
 							this.currentInventory.docstatus === 0 &&
@@ -173,6 +205,7 @@ window.start_inventory_app = function() {
 						fsm_inventory_item: [],
 						docstatus: 0
 					};
+					this.currentPage = 1; // Reset on new
 					frappe.show_alert({message: __('New Inventory Created'), indicator: 'blue'});
 				},
 
