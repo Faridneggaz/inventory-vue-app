@@ -209,13 +209,13 @@
 					<div class="items-header-bar">
 						<h3 class="section-title">Inventory Items</h3>
 						<div class="table-search-box">
-							<i class="fa fa-search search-icon"></i>
+							<i class="fa fa-barcode search-icon"></i>
 							<input 
 								type="text" 
 								v-model="searchQuery" 
 								class="search-input" 
-								placeholder="Search items by code, name or barcode..."
-								@input="currentPage = 1"
+								placeholder="Scan barcode or type item code..."
+								@keyup.enter="handleBarcodeScan"
 							>
 							<button v-if="searchQuery" class="clear-search" @click="clearSearch">
 								<i class="fa fa-times"></i>

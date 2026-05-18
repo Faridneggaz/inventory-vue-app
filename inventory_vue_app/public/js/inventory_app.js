@@ -106,18 +106,46 @@ window.start_inventory_app = function() {
                 },
 
                 /**
-                 * Returns the full list of items filtered by the current search query.
+                 * Returns the full list of items. (Search filtering disabled as per user request)
                  */
                 getFilteredItems() {
                     if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) return [];
-                    const query = (this.searchQuery || '').toLowerCase().trim();
-                    if (!query) return this.currentInventory.fsm_inventory_item;
+                    return this.currentInventory.fsm_inventory_item;
+                },
 
-                    return this.currentInventory.fsm_inventory_item.filter(item => {
-                        return (item.item_code || '').toLowerCase().includes(query) ||
-                               (item.item_name || '').toLowerCase().includes(query) ||
-                               (item.barcode || '').toLowerCase().includes(query);
-                    });
+                /**
+                 * Handles barcode scanning or manual item code entry.
+                 * Increments Counted Qty if a match is found.
+                 */
+                handleBarcodeScan() {
+                    if (!this.searchQuery) return;
+                    
+                    const code = this.searchQuery.trim();
+                    const items = this.currentInventory.fsm_inventory_item || [];
+                    
+                    // Find item by code or barcode
+                    const item = items.find(i => 
+                        i.item_code === code || 
+                        i.barcode === code
+                    );
+
+                    if (item) {
+                        item.counted_qty = (item.counted_qty || 0) + 1;
+                        item.qty_offset = (item.counted_qty || 0) - (item.expected_qty || 0);
+                        
+                        frappe.show_alert({
+                            message: __('{0}: Counted {1}', [item.item_code, item.counted_qty]),
+                            indicator: 'green'
+                        });
+
+                        // Clear input for next scan
+                        this.searchQuery = '';
+                    } else {
+                        frappe.show_alert({
+                            message: __('Item {0} not found in this list', [code]),
+                            indicator: 'orange'
+                        });
+                    }
                 },
 
                 clearSearch() {
