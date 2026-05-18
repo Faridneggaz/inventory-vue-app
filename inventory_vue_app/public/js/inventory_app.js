@@ -136,7 +136,7 @@ window.start_inventory_app = function() {
 
                     if (item) {
                         item.counted_qty = (item.counted_qty || 0) + 1;
-                        item.qty_offset = (item.counted_qty || 0) - (item.expected_qty || 0);
+                        item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0));
                         
                         frappe.show_alert({
                             message: __('{0}: Counted {1}', [item.item_code, item.counted_qty]),
@@ -217,7 +217,7 @@ window.start_inventory_app = function() {
                                 barcode: item.barcode,
                                 expected_qty: item.qty || 0,
                                 counted_qty: 0,
-                                qty_offset: -(item.qty || 0),
+                                qty_offset: Math.abs(item.qty || 0),
                                 buying_price: item.buying_rate || 0,
                                 selling_price: item.selling_rate || 0
                             }));
@@ -305,7 +305,9 @@ window.start_inventory_app = function() {
 					items.forEach(item => {
 						totalExpected += (parseFloat(item.expected_qty) || 0);
 						totalCounted += (parseFloat(item.counted_qty) || 0);
-						totalOffset += (parseFloat(item.qty_offset) || 0);
+						// Recalculate individual offsets to absolute values if they weren't already
+						item.qty_offset = Math.abs((parseFloat(item.counted_qty) || 0) - (parseFloat(item.expected_qty) || 0));
+						totalOffset += item.qty_offset;
 					});
 
 					// Map values to FSM Inventory fields
