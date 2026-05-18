@@ -291,11 +291,28 @@ window.start_inventory_app = function() {
                 },
 
 				/**
-				 * Saves the current document state to the database.
+				 * Persists the current inventory record to the database.
 				 */
 				async saveInventory() {
 					if (!this.currentInventory) return;
 					
+					// Calculate totals before saving
+					const items = this.currentInventory.fsm_inventory_item || [];
+					let totalExpected = 0;
+					let totalCounted = 0;
+					let totalOffset = 0;
+
+					items.forEach(item => {
+						totalExpected += (parseFloat(item.expected_qty) || 0);
+						totalCounted += (parseFloat(item.counted_qty) || 0);
+						totalOffset += (parseFloat(item.qty_offset) || 0);
+					});
+
+					// Map values to FSM Inventory fields
+					this.currentInventory.total_expected_qty = totalExpected;
+					this.currentInventory.total_counted_qty = totalCounted;
+					this.currentInventory.total_qty_offset = totalOffset;
+
 					this.loadingDetail = true;
 					try {
 						let response;
@@ -345,6 +362,12 @@ window.start_inventory_app = function() {
 
 					frappe.confirm(__('Are you sure you want to proceed to the system document?'), () => {
 						frappe.set_route('Form', 'FSM Inventory', this.currentInventory.name);
+						
+						// Perform a hard refresh after a tiny delay to ensure the route change has started
+						// This restores the ERPNext UI components effectively.
+						setTimeout(() => {
+							window.location.reload();
+						}, 100);
 					});
 				},
 

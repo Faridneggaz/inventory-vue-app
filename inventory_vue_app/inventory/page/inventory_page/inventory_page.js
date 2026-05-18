@@ -29,3 +29,13 @@ frappe.pages['inventory-page'].on_page_load = async function(wrapper) {
 
 	});
 };
+
+frappe.pages['inventory-page'].on_page_show = function(wrapper) {
+	// Hide ERPNext UI when entering the page
+	$('.sticky-top, .page-head').hide();
+};
+
+frappe.pages['inventory-page'].on_page_hide = function(wrapper) {
+	// Show ERPNext UI when leaving the page
+	$('.sticky-top, .page-head').show();
+};

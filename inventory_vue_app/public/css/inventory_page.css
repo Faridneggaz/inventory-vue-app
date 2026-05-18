@@ -9,12 +9,6 @@
 	background: white;
 }
 
-/* Hide ERPNext UI */
-.sticky-top,
-.page-head {
-	display: none;
-}
-
 /* ===== Layout ===== */
 
 .inventory-layout {
