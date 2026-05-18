@@ -79,14 +79,15 @@
 
 	</div>
 	<div class="inventory-content">
-		<!-- Loading State -->
-		<div v-if="hasLoading()" class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading inventory details...</p>
-		</div>
-
 		<!-- Detail View -->
-		<div v-else-if="hasSelected()" class="detail-container">
+		<div v-if="hasSelected()" class="detail-container">
+			
+			<!-- Non-intrusive Loading Overlay -->
+			<div v-if="hasLoading()" class="loading-overlay">
+				<div class="spinner"></div>
+				<p>Updating items...</p>
+			</div>
+
 			<div class="detail-header">
 				<div class="header-left">
 					<h2 class="title">[[ currentInventory.name ]]</h2>
