@@ -335,42 +335,16 @@ window.start_inventory_app = function() {
 				},
 
 				/**
-				 * Submits the current inventory record.
+				 * Redirects the user to the FSM Inventory DocType page.
 				 */
 				async submitInventory() {
 					if (!this.currentInventory || !this.currentInventory.name) {
-						frappe.msgprint(__('Please save the record before submitting.'));
+						frappe.msgprint(__('Please save the record before proceeding.'));
 						return;
 					}
 
-					frappe.confirm(__('Are you sure you want to submit this inventory? This action is irreversible.'), async () => {
-						this.loadingDetail = true;
-						try {
-							const response = await frappe.call({
-								method: 'frappe.client.submit',
-								args: {
-									doc: this.currentInventory
-								}
-							});
-
-							if (response.message) {
-								this.currentInventory = response.message;
-								await this.loadInventories();
-								frappe.show_alert({
-									message: __('Inventory {0} submitted successfully', [this.currentInventory.name]),
-									indicator: 'blue'
-								});
-								
-								// Redirect to ERPNext DocType page after short delay
-								setTimeout(() => {
-									frappe.set_route('List', 'FSM Inventory');
-								}, 1000);
-							}
-						} catch (e) {
-							console.error("Submission failure:", e);
-						} finally {
-							this.loadingDetail = false;
-						}
+					frappe.confirm(__('Are you sure you want to proceed to the system document?'), () => {
+						frappe.set_route('Form', 'FSM Inventory', this.currentInventory.name);
 					});
 				},
 

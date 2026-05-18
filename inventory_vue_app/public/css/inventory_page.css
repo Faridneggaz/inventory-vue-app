@@ -280,7 +280,7 @@
 	align-items: center;
 }
 
-.btn-primary-custom, .btn-success-custom {
+.btn-primary-custom, .btn-system-custom {
 	padding: 8px 16px;
 	border-radius: 6px;
 	font-weight: 600;
@@ -302,13 +302,13 @@
 	background: #2563eb;
 }
 
-.btn-success-custom {
-	background: #10b981;
+.btn-system-custom {
+	background: #6b7280;
 	color: white;
 }
 
-.btn-success-custom:hover {
-	background: #059669;
+.btn-system-custom:hover {
+	background: #4b5563;
 }
 
 .status-pill {
