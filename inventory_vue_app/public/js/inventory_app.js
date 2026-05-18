@@ -30,7 +30,8 @@ window.start_inventory_app = function() {
                     // State management
                     currentPage: 1,
                     itemsPerPage: 50,
-                    searchQuery: ''
+                    searchQuery: '',
+                    isSelecting: false
                 }
             },
 
@@ -47,16 +48,16 @@ window.start_inventory_app = function() {
              */
             watch: {
                 'currentInventory.warehouse'(val) {
-                    console.log('Warehouse changed:', val);
                     if (val && this.isEditable()) {
-                        this.fetchWarehouseItems();
+                        console.log('Warehouse changed, fetching items...');
+                        this.fetchWarehouseItems(this.isSelecting);
                     }
                 },
 
                 'currentInventory.group'(val) {
-                    console.log('Group changed:', val);
                     if (this.currentInventory?.warehouse && this.isEditable()) {
-                        this.fetchWarehouseItems();
+                        console.log('Item group changed, fetching items...');
+                        this.fetchWarehouseItems(this.isSelecting);
                     }
                 }
             },
@@ -185,10 +186,15 @@ window.start_inventory_app = function() {
                 },
 
                 /**
-                 * Synchronizes table items with current warehouse/price list configurations.
+                 * Fetches items with stock and price details from the backend.
                  */
-                async fetchWarehouseItems() {
-                    if (!this.currentInventory.warehouse) return;
+                async fetchWarehouseItems(silent = false) {
+                    if (!this.currentInventory || !this.currentInventory.warehouse) return;
+
+                    // If items already exist and we are just loading the doc, don't overwrite
+                    if (this.currentInventory.fsm_inventory_item && this.currentInventory.fsm_inventory_item.length > 0 && silent) {
+                        return;
+                    }
 
                     this.loadingDetail = true;
                     try {
@@ -203,26 +209,30 @@ window.start_inventory_app = function() {
                         });
 
                         const items = response.message || [];
-                        this.currentInventory.fsm_inventory_item = items.map(item => ({
-                            item_code: item.item_code,
-                            item_name: item.item_name,
-                            barcode: item.barcode,
-                            expected_qty: item.qty || 0,
-                            counted_qty: 0,
-                            qty_offset: -(item.qty || 0),
-                            buying_price: item.buying_rate || 0,
-                            selling_price: item.selling_rate || 0
-                        }));
+                        // Only populate if items were actually returned
+                        if (items.length > 0) {
+                            this.currentInventory.fsm_inventory_item = items.map(item => ({
+                                item_code: item.item_code,
+                                item_name: item.item_name,
+                                barcode: item.barcode,
+                                expected_qty: item.qty || 0,
+                                counted_qty: 0,
+                                qty_offset: -(item.qty || 0),
+                                buying_price: item.buying_rate || 0,
+                                selling_price: item.selling_rate || 0
+                            }));
 
+                            if (!silent) {
+                                frappe.show_alert({
+                                    message: __('{0} items synchronized', [this.currentInventory.fsm_inventory_item.length]),
+                                    indicator: 'green'
+                                });
+                            }
+                        }
+                        
                         this.currentPage = 1;
-
-                        frappe.show_alert({
-                            message: __('{0} items synchronized', [this.currentInventory.fsm_inventory_item.length]),
-                            indicator: 'green'
-                        });
                     } catch (e) {
-                        console.error("Synchronization failure:", e);
-                        frappe.msgprint('Failed to synchronize warehouse items');
+                        console.error("Fetch items error:", e);
                     } finally {
                         this.loadingDetail = false;
                     }
@@ -232,6 +242,9 @@ window.start_inventory_app = function() {
                  * Loads a specific FSM Inventory document.
                  */
                 async selectInventory(inventory) {
+                    if (!inventory || !inventory.name) return;
+                    
+                    this.isSelecting = true;
                     this.loadingDetail = true;
                     try {
                         const response = await frappe.call({
@@ -241,23 +254,19 @@ window.start_inventory_app = function() {
                                 name: inventory.name
                             }
                         });
+                        
                         this.currentInventory = response.message;
                         this.currentPage = 1;
-
-                        // Logic for auto-loading items for new/unpopulated drafts
-                        if (
-                            this.currentInventory.docstatus === 0 &&
-                            (!this.currentInventory.fsm_inventory_item ||
-                                this.currentInventory.fsm_inventory_item.length === 0)
-                        ) {
-                            await this.fetchWarehouseItems();
-                        }
-                        console.log("Active Document:", this.currentInventory);
+                        
+                        // We rely on the watcher to trigger fetchWarehouseItems(true) 
+                        // if the document has a warehouse but no items.
                     } catch (e) {
-                        console.error("Document retrieval error:", e);
-                        frappe.msgprint('Failed to load inventory details');
+                        console.error("Document selection error:", e);
+                        frappe.msgprint(__('Failed to load inventory details.'));
                     } finally {
-                        setTimeout(() => { this.loadingDetail = false; }, 300);
+                        this.loadingDetail = false;
+                        // Use a small timeout to ensure watchers have finished before resetting the flag
+                        setTimeout(() => { this.isSelecting = false; }, 100);
                     }
                 },
 
@@ -282,7 +291,7 @@ window.start_inventory_app = function() {
                 },
 
 				/**
-				 * Persists the current inventory record to the database.
+				 * Saves the current document state to the database.
 				 */
 				async saveInventory() {
 					if (!this.currentInventory) return;
@@ -351,6 +360,11 @@ window.start_inventory_app = function() {
 									message: __('Inventory {0} submitted successfully', [this.currentInventory.name]),
 									indicator: 'blue'
 								});
+								
+								// Redirect to ERPNext DocType page after short delay
+								setTimeout(() => {
+									frappe.set_route('List', 'FSM Inventory');
+								}, 1000);
 							}
 						} catch (e) {
 							console.error("Submission failure:", e);
@@ -360,9 +374,9 @@ window.start_inventory_app = function() {
 					});
 				},
 
-                /**
-                 * Returns semantic CSS classes for row highlighting.
-                 */
+				/**
+				 * Returns semantic CSS classes for row highlighting.
+				 */
                 getQtyClass(offset) {
                     if (offset != 0) return 'text-danger';
                     return '';
