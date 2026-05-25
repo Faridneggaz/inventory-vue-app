@@ -32,10 +32,10 @@ frappe.pages['inventory-page'].on_page_load = async function(wrapper) {
 
 frappe.pages['inventory-page'].on_page_show = function(wrapper) {
 	// Hide ERPNext UI when entering the page
-	$('.sticky-top, .page-head').hide();
+	$('.sticky-top, .page-head, .body-sidebar-container').hide();
 };
 
 frappe.pages['inventory-page'].on_page_hide = function(wrapper) {
 	// Show ERPNext UI when leaving the page
-	$('.sticky-top, .page-head').show();
+	$('.sticky-top, .page-head, .body-sidebar-container').show();
 };
