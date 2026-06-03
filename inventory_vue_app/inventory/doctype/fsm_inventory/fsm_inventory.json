@@ -33,7 +33,7 @@
    "fieldname": "inventory_reference",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Inventory Reference",
+   "label": "R\u00e9f\u00e9rence d'inventaire",
    "no_copy": 1,
    "reqd": 1,
    "unique": 1
@@ -41,20 +41,20 @@
   {
    "fieldname": "starting_date",
    "fieldtype": "Datetime",
-   "label": "Starting Date",
+   "label": "Date de d\u00e9but",
    "reqd": 1
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Datetime",
-   "label": "End Date",
+   "label": "Date de fin",
    "reqd": 1
   },
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
    "in_standard_filter": 1,
-   "label": "Warehouse",
+   "label": "Entrep\u00f4t",
    "options": "Warehouse",
    "reqd": 1
   },
@@ -62,14 +62,14 @@
    "fieldname": "group",
    "fieldtype": "Link",
    "in_standard_filter": 1,
-   "label": "Family",
+   "label": "Famille",
    "options": "Item Group"
   },
   {
    "fieldname": "stock_reconciliation",
    "fieldtype": "Link",
    "in_standard_filter": 1,
-   "label": "Stock Reconciliation",
+   "label": "pi\u00e8ce d inventaire",
    "no_copy": 1,
    "options": "Stock Reconciliation",
    "read_only": 1,
@@ -78,14 +78,14 @@
   {
    "fieldname": "buying_price_list",
    "fieldtype": "Link",
-   "label": "Buying Price List",
+   "label": "Liste de prix d'achat",
    "options": "Price List",
    "reqd": 1
   },
   {
    "fieldname": "selling_price_list",
    "fieldtype": "Link",
-   "label": "Selling Price List",
+   "label": "Liste de prix de vente",
    "options": "Price List",
    "reqd": 1
   },
@@ -127,7 +127,7 @@
   {
    "fieldname": "scan_input",
    "fieldtype": "Data",
-   "label": "Please scan here"
+   "label": "Scannez le code-barres"
   },
   {
    "fieldname": "amended_from",
@@ -143,14 +143,14 @@
    "default": "0",
    "fieldname": "total_counted_qty",
    "fieldtype": "Float",
-   "label": "Total Counted QTY",
+   "label": "Quantit\u00e9 totale compt\u00e9e",
    "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "total_expected_qty",
    "fieldtype": "Float",
-   "label": "Total Expected QTY",
+   "label": "QT\u00c9 totale pr\u00e9vue",
    "read_only": 1
   },
   {
@@ -161,7 +161,7 @@
    "default": "0",
    "fieldname": "total_qty_offset",
    "fieldtype": "Float",
-   "label": "Total Qty Offset",
+   "label": "d\u00e9calage de quantit\u00e9 totale",
    "read_only": 1
   }
  ],
@@ -169,11 +169,11 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-18 16:58:16.947486",
- "modified_by": "rayanaouf1512@gmail.com",
+ "modified": "2026-06-03 11:45:27.515072",
+ "modified_by": "Administrator",
  "module": "Inventory",
  "name": "FSM Inventory",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

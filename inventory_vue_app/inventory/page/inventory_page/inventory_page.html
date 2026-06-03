@@ -1,304 +1,614 @@
 <div id="inventory-app" class="inventory-layout">
 
+
+
 	<!-- Sidebar -->
+
 	<div
+
 		class="inventory-sidebar"
+
 		:class="{ hidden: !sidebarVisible }"
+
 	>
 
+
+
 		<div class="sidebar-header">
-			<div class="header-title">Inventories</div>
+
+			<div class="header-title">Inventaires</div>
+
 			<button class="create-btn" @click="addInventory">
-				<i class="fa fa-plus"></i> New
+
+				<i class="fa fa-plus"></i> Ajouter
+
 			</button>
+
 		</div>
+
+
 
 		<div class="sidebar-body">
 
+
+
 			<div
+
 				v-for="inventory in inventories"
+
 				:key="inventory.name"
+
 				class="inventory-item"
+
 				:class="{ active: isCurrent(inventory.name) }"
+
 				@click="selectInventory(inventory)"
+
 			>
+
 				<div class="item-main">
 
+
+
 					<div class="inventory-name">
+
 						[[ inventory.name ]]
+
 					</div>
+
+
 
 					<div
+
 						class="inventory-status-badge"
+
 						:class="getStatusClass(inventory.docstatus)"
+
 					>
+
 						[[ getStatusLabel(inventory.docstatus) ]]
+
 					</div>
 
+
+
 				</div>
+
+
 
 				<div class="item-details">
 
+
+
 					<div class="detail-row">
+
 						<i class="fa fa-warehouse"></i>
+
 						[[ inventory.warehouse ]]
+
 					</div>
+
+
 
 					<div v-if="inventory.group" class="detail-row">
+
 						<i class="fa fa-tag"></i>
+
 						[[ inventory.group ]]
+
 					</div>
+
+
 
 					<div class="detail-row">
+
 						<i class="fa fa-calendar-alt"></i>
+
 						[[ inventory.starting_date ]]
+
 					</div>
 
+
+
 					<div class="detail-row offset-info">
+
 						<i class="fa fa-calculator"></i>
-						Offset: [[ inventory.total_qty_offset ]]
+
+						decalage : [[ inventory.total_qty_offset ]]
+
 					</div>
+
+
 
 				</div>
 
+
+
 			</div>
+
+
 
 		</div>
 
+
+
 	</div>
+
+
 
 	<!-- Main Content -->
 
+
+
 	<div class="content-toolbar">
+
 		<button
+
 			class="inventory-toggle-btn"
+
 			@click="toggleSidebar"
+
 		>
+
 			<i class="fa fa-bars"></i>
+
 		</button>
 
+
+
 	</div>
+
 	<div class="inventory-content">
+
 		<!-- Detail View -->
+
 		<div v-if="hasSelected()" class="detail-container">
+
 			
+
 			<!-- Non-intrusive Loading Overlay -->
+
 			<div v-if="hasLoading()" class="loading-overlay">
+
 				<div class="spinner"></div>
+
 				<p>Updating items...</p>
+
 			</div>
+
+
 
 			<div class="detail-header">
+
 				<div class="header-left">
+
 					<h2 class="title">[[ currentInventory.name ]]</h2>
+
 					<div 
+
 						class="status-pill" 
+
 						:class="getStatusClass(currentInventory.docstatus)"
+
 					>
+
 						[[ getStatusLabel(currentInventory.docstatus) ]]
+
 					</div>
+
 				</div>
+
 				<div class="header-right">
-					<button v-if="currentInventory.docstatus === 0" class="btn-primary-custom" @click="saveInventory">Save</button>
-					<button v-if="currentInventory.name" class="btn-system-custom" @click="submitInventory" title="Open in System">System View</button>
+
+					<button v-if="currentInventory.name" class="btn-export-custom" @click="exportItems" title="Export Items">Exporter</button>
+
+					<button v-if="currentInventory.docstatus === 0" class="btn-primary-custom" @click="saveInventory">sauvegarder</button>
+
+					<button v-if="currentInventory.name" class="btn-system-custom" @click="submitInventory" title="Open in System">vue sur le système</button>
+
 				</div>
+
 			</div>
+
+
 
 			<div class="detail-body">
-				<div class="info-grid">
+				<div class="filters-toggle-wrapper">
+					<button class="filters-toggle-btn" @click="toggleFilters">
+						<i class="fa" :class="getFilterIconClass()"></i>
+						<span>[[ getFilterButtonText() ]]</span>
+					</button>
+				</div>
+				<div v-show="!filtersCollapsed" class="info-grid">
+
 					<!-- Ref -->
+
 					<div class="info-card">
+
 						<label>Ref</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
-							<input 
-								type="text" 
-								v-model="currentInventory.inventory_reference" 
+
+							<input
+
+								type="text"
+
+								v-model="currentInventory.inventory_reference"
+
 								class="form-control-custom"
+
 								placeholder="Enter reference..."
+
 							>
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.inventory_reference ]]</div>
+
 					</div>
+
+
 
 					<!-- Warehouse -->
+
 					<div class="info-card">
-						<label>Warehouse</label>
+
+						<label>entrepôt</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
+
 							<select v-model="currentInventory.warehouse" class="form-control-custom">
+
 								<option value="">Select Warehouse...</option>
+
 								<option v-for="wh in warehouses" :key="wh.name" :value="wh.name">[[ wh.name ]]</option>
+
 							</select>
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.warehouse ]]</div>
+
 					</div>
+
+
 
 					<!-- Family -->
+
 					<div class="info-card">
-						<label>Family</label>
+
+						<label>Famille</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
+
 							<select v-model="currentInventory.group" class="form-control-custom">
+
 								<option value="">Select Item Group...</option>
+
 								<option v-for="fam in families" :key="fam.name" :value="fam.name">[[ fam.name ]]</option>
+
 							</select>
+
 						</div>
+
 						<div v-else-if="currentInventory.group" class="value">[[ currentInventory.group ]]</div>
+
 						<div v-else class="value text-muted">None</div>
+
 					</div>
+
+
 
 					<!-- Starting Date -->
+
 					<div class="info-card">
-						<label>Starting Date</label>
+
+						<label>Date de début</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
+
 							<input type="datetime-local" v-model="currentInventory.starting_date" class="form-control-custom">
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.starting_date ]]</div>
+
 					</div>
+
+
 
 					<!-- End Date -->
+
 					<div class="info-card">
-						<label>End Date</label>
+
+						<label>Date de fin</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
+
 							<input type="datetime-local" v-model="currentInventory.end_date" class="form-control-custom">
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.end_date ]]</div>
+
 					</div>
+
+
 
 					<!-- Buying Price List -->
+
 					<div class="info-card">
-						<label>Buying Price List</label>
+
+						<label>Liste de prix d achat</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
-							<select 
-								v-model="currentInventory.buying_price_list" 
+
+							<select
+
+								v-model="currentInventory.buying_price_list"
+
 								class="form-control-custom"
+
 								@change="fetchWarehouseItems"
+
 							>
+
 								<option v-for="pl in priceLists" :key="pl.name" :value="pl.name">[[ pl.name ]]</option>
+
 							</select>
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.buying_price_list ]]</div>
+
 					</div>
+
+
 
 					<!-- Selling Price List -->
+
 					<div class="info-card">
-						<label>Selling Price List</label>
+
+						<label>Liste de prix de vente</label>
+
 						<div v-if="isEditable()" class="input-wrapper">
-							<select 
-								v-model="currentInventory.selling_price_list" 
+
+							<select
+
+								v-model="currentInventory.selling_price_list"
+
 								class="form-control-custom"
+
 								@change="fetchWarehouseItems"
+
 							>
+
 								<option v-for="pl in priceLists" :key="pl.name" :value="pl.name">[[ pl.name ]]</option>
+
 							</select>
+
 						</div>
+
 						<div v-else class="value">[[ currentInventory.selling_price_list ]]</div>
+
 					</div>
+
+
 
 					<!-- Total Offset (Read Only always) -->
+
 					<div class="info-card highlight">
-						<label>Total Qty Offset</label>
+
+						<label>décalage de quantité totale</label>
+
 						<div class="value">[[ currentInventory.total_qty_offset || 0 ]]</div>
+
 					</div>
+
 				</div>
+
+
 
 				<div v-if="currentInventory.stock_reconciliation" class="linked-record">
-					<label>Linked Stock Reconciliation</label>
+
+					<label>pièce d inventaire</label>
+
 					<div class="reco-id">[[ currentInventory.stock_reconciliation ]]</div>
+
 				</div>
+
+
 
 				<div class="items-section">
+
 					<div class="items-header-bar">
-						<h3 class="section-title">Inventory Items</h3>
-						<div class="table-search-box">
+
+						<h3 class="section-title">Articles en stock</h3>
+
+						<div v-if="isEditable()" class="table-search-box">
+
 							<i class="fa fa-barcode search-icon"></i>
-							<input 
-								type="text" 
-								v-model="searchQuery" 
-								class="search-input" 
-								placeholder="Scan barcode or type item code..."
+
+							<input
+
+								type="text"
+
+								v-model="searchQuery"
+
+								class="search-input"
+
+								placeholder="Scannez le code-barres ou saisissez le code de l article..."
+
 								@keyup.enter="handleBarcodeScan"
+
 								ref="scannerInput"
+
 							>
-							
+
+
+
 							<button v-if="searchQuery" class="clear-search" @click="clearSearch">
+
 								<i class="fa fa-times"></i>
+
 							</button>
+
 						</div>
+
 					</div>
+
 					<div class="table-responsive">
+
 						<table class="table table-bordered custom-table">
+
 							<thead>
+
 								<tr>
-									<th>Item Code</th>
-									<th class="text-right">Counted Qty</th>
-									<th class="text-right">Expected Qty</th>
-									<th class="text-right">Offset</th>
+
+									<th>Code Article</th>
+
+									<th class="text-right">Qté Comptée</th>
+
+									<th class="text-right">Qté Attendue</th>
+
+									<th class="text-right">Écart</th>
+
 								</tr>
+
 							</thead>
+
 							<tbody>
-								<tr 
-									v-for="item in getPaginatedItems()" 
+
+								<tr
+
+									v-for="item in getPaginatedItems()"
+
 									:key="item.name"
+
 									:class="getQtyClass(item.qty_offset)"
+
 								>
+
 									<td>[[ item.item_code ]]</td>
+
 									<td class="text-right td-input">
+
 										<div v-if="isEditable()" class="input-wrapper-table">
-											<input 
-												type="number" 
-												v-model.number="item.counted_qty" 
+
+											<input
+
+												type="number"
+
+												v-model.number="item.counted_qty"
+
 												class="table-input"
+
 												@input="item.qty_offset = Math.abs((item.counted_qty || 0) - (item.expected_qty || 0)); item.is_scanned = 1; item.scanned = 1; item.scanned_at = frappe.datetime.now_datetime();"
+
 												min="0"
+
 											>
+
 										</div>
+
 										<div v-else class="value">[[ item.counted_qty || 0 ]]</div>
+
 									</td>
+
 									<td class="text-right">[[ item.expected_qty ]]</td>
+
 									<td class="text-right">[[ item.qty_offset ]]</td>
+
 								</tr>
+
 								<tr v-if="hasNoItems()">
+
 									<td colspan="4" class="text-center text-muted">No items found in this inventory.</td>
+
 								</tr>
+
 							</tbody>
+
 						</table>
+
 					</div>
+
+
 
 					<!-- Pagination Controls -->
+
 					<div v-if="!hasNoItems()" class="pagination-container">
+
 						<div class="pagination-info">
-							Showing [[ (currentPage - 1) * itemsPerPage + 1 ]] to 
-							[[ Math.min(currentPage * itemsPerPage, (currentInventory.fsm_inventory_item || []).length) ]] 
-							of [[ (currentInventory.fsm_inventory_item || []).length ]] items
+
+							Affichage de [[ (currentPage - 1) * itemsPerPage + 1 ]] à 
+
+							[[ Math.min(currentPage * itemsPerPage, (currentInventory.fsm_inventory_item || []).length) ]]
+
+							sur [[ (currentInventory.fsm_inventory_item || []).length ]] articles
+
 						</div>
+
 						<div class="pagination-buttons">
-							<button 
-								class="btn-pagination" 
+
+							<button
+
+								class="btn-pagination"
+
 								:disabled="currentPage === 1"
+
 								@click="prevPage"
+
 							>
-								<i class="fa fa-chevron-left"></i> Previous
+
+								<i class="fa fa-chevron-left"></i> Précédente
+
 							</button>
+
 							<div class="page-number">Page [[ currentPage ]] of [[ getTotalPages() ]]</div>
-							<button 
-								class="btn-pagination" 
+
+							<button
+
+								class="btn-pagination"
+
 								:disabled="currentPage === getTotalPages()"
+
 								@click="nextPage"
+
 							>
-								Next <i class="fa fa-chevron-right"></i>
+
+								Suivante <i class="fa fa-chevron-right"></i>
+
 							</button>
+
 						</div>
+
 					</div>
+
 				</div>
+
 			</div>
+
 		</div>
 
+
+
 		<div v-else class="empty-selection">
+
 			<div class="empty-icon">
+
 				<i class="fa fa-clipboard-list"></i>
+
 			</div>
+
 			<h3>No Inventory Selected</h3>
+
 			<p>Select a record from the sidebar to view its details.</p>
+
 		</div>
+
 	</div>
+
+
 
 </div>
