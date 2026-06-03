@@ -186,245 +186,39 @@ window.start_inventory_app = function() {
                 },
 
                 /**
-                 * Exports inventory items to Excel format with styling.
+                 * Exports inventory items to Excel format using backend API.
                  */
-                exportItems() {
+                async exportItems() {
                     if (!this.currentInventory || !this.currentInventory.fsm_inventory_item) {
                         frappe.msgprint(__('Aucun élément à exporter'));
                         return;
                     }
 
-                    const items = this.currentInventory.fsm_inventory_item;
+                    try {
+                        frappe.dom.freeze(__('Exporting to Excel...'));
 
-                    // Load SheetJS library if not available
-                    if (!window.XLSX) {
-                        const script = document.createElement('script');
-                        script.src = 'https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js';
-                        script.onload = () => this.generateExcel(items);
-                        document.head.appendChild(script);
-                    } else {
-                        this.generateExcel(items);
-                    }
-                },
-
-                /**
-                 * Generates and downloads Excel file with styling.
-                 */
-                generateExcel(items) {
-                    // Create workbook
-                    const wb = XLSX.utils.book_new();
-
-                    // Inventory Information Sheet
-                    const invData = [
-                        ['INVENTORY INFORMATION'],
-                        [''],
-                        ['Field', 'Value'],
-                        ['Name', this.currentInventory.name || ''],
-                        ['Reference', this.currentInventory.inventory_reference || ''],
-                        ['Warehouse', this.currentInventory.warehouse || ''],
-                        ['Family', this.currentInventory.group || ''],
-                        ['Starting Date', this.currentInventory.starting_date || ''],
-                        ['End Date', this.currentInventory.end_date || ''],
-                        ['Buying Price List', this.currentInventory.buying_price_list || ''],
-                        ['Selling Price List', this.currentInventory.selling_price_list || ''],
-                        ['Total Expected Qty', this.currentInventory.total_expected_qty || 0],
-                        ['Total Counted Qty', this.currentInventory.total_counted_qty || 0],
-                        ['Total Qty Offset', this.currentInventory.total_qty_offset || 0],
-                        ['Status', this.currentInventory.docstatus === 1 ? 'Submitted' : 'Draft']
-                    ];
-
-                    const invWs = XLSX.utils.aoa_to_sheet(invData);
-
-                    // Style inventory sheet
-                    const invRange = XLSX.utils.decode_range(invWs['!ref']);
-                    for (let R = invRange.s.r; R <= invRange.e.r; ++R) {
-                        for (let C = invRange.s.c; C <= invRange.e.c; ++C) {
-                            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!invWs[cellAddress]) continue;
-
-                            // Main header row styling
-                            if (R === 0) {
-                                invWs[cellAddress].s = {
-                                    font: { bold: true, sz: 16, color: { rgb: 'FFFFFF' } },
-                                    fill: { fgColor: { rgb: '1F4E78' } },
-                                    alignment: { horizontal: 'center', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        bottom: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        left: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        right: { style: 'thin', color: { rgb: '1F4E78' } }
-                                    }
-                                };
+                        const response = await frappe.call({
+                            method: 'inventory_vue_app.api.export_inventory_to_excel',
+                            args: {
+                                inventory_name: this.currentInventory.name
                             }
-                            // Column headers styling
-                            else if (R === 2) {
-                                invWs[cellAddress].s = {
-                                    font: { bold: true, sz: 12, color: { rgb: 'FFFFFF' } },
-                                    fill: { fgColor: { rgb: '4472C4' } },
-                                    alignment: { horizontal: 'left', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: '4472C4' } },
-                                        bottom: { style: 'thin', color: { rgb: '4472C4' } },
-                                        left: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        right: { style: 'thin', color: { rgb: 'D0D0D0' } }
-                                    }
-                                };
-                            }
-                            // Field name column styling
-                            else if (R >= 3 && C === 0) {
-                                invWs[cellAddress].s = {
-                                    font: { bold: true, sz: 11, color: { rgb: '1F4E78' } },
-                                    fill: { fgColor: { rgb: 'E7E6E6' } },
-                                    alignment: { horizontal: 'left', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        bottom: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        left: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        right: { style: 'thin', color: { rgb: 'D0D0D0' } }
-                                    }
-                                };
-                            }
-                            // Value column styling
-                            else if (R >= 3 && C === 1) {
-                                invWs[cellAddress].s = {
-                                    font: { sz: 11, color: { rgb: '000000' } },
-                                    fill: { fgColor: { rgb: 'FFFFFF' } },
-                                    alignment: { horizontal: 'left', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        bottom: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        left: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        right: { style: 'thin', color: { rgb: 'D0D0D0' } }
-                                    }
-                                };
-                            }
+                        });
+
+                        if (response.message && response.message.file_url) {
+                            // Trigger download
+                            window.open(response.message.file_url, '_blank');
+
+                            frappe.show_alert({
+                                message: __('{0} items exported to Excel', [this.currentInventory.fsm_inventory_item.length]),
+                                indicator: 'green'
+                            });
                         }
+                    } catch (e) {
+                        console.error("Export error:", e);
+                        frappe.msgprint(__('Failed to export to Excel'));
+                    } finally {
+                        frappe.dom.unfreeze();
                     }
-
-                    // Set column widths
-                    invWs['!cols'] = [
-                        { wch: 30 }, // Field
-                        { wch: 40 }  // Value
-                    ];
-
-                    XLSX.utils.book_append_sheet(wb, invWs, 'Inventory Info');
-
-                    // Items Sheet
-                    const itemsData = [
-                        ['INVENTORY ITEMS'],
-                        [''],
-                        ['Item Code', 'Item Name', 'Barcode', 'Expected Qty', 'Counted Qty', 'Offset', 'Buying Price', 'Selling Price', 'Scanned', 'Scanned At']
-                    ];
-
-                    items.forEach(item => {
-                        itemsData.push([
-                            item.item_code || '',
-                            item.item_name || '',
-                            item.barcode || '',
-                            item.expected_qty || 0,
-                            item.counted_qty || 0,
-                            item.qty_offset || 0,
-                            item.buying_price || 0,
-                            item.selling_price || 0,
-                            item.scanned || 0,
-                            item.scanned_at || ''
-                        ]);
-                    });
-
-                    const itemsWs = XLSX.utils.aoa_to_sheet(itemsData);
-
-                    // Style items sheet
-                    const itemsRange = XLSX.utils.decode_range(itemsWs['!ref']);
-                    for (let R = itemsRange.s.r; R <= itemsRange.e.r; ++R) {
-                        for (let C = itemsRange.s.c; C <= itemsRange.e.c; ++C) {
-                            const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!itemsWs[cellAddress]) continue;
-
-                            // Main header row styling
-                            if (R === 0) {
-                                itemsWs[cellAddress].s = {
-                                    font: { bold: true, sz: 16, color: { rgb: 'FFFFFF' } },
-                                    fill: { fgColor: { rgb: '1F4E78' } },
-                                    alignment: { horizontal: 'center', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        bottom: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        left: { style: 'thin', color: { rgb: '1F4E78' } },
-                                        right: { style: 'thin', color: { rgb: '1F4E78' } }
-                                    }
-                                };
-                            }
-                            // Column headers styling
-                            else if (R === 2) {
-                                itemsWs[cellAddress].s = {
-                                    font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
-                                    fill: { fgColor: { rgb: '4472C4' } },
-                                    alignment: { horizontal: 'center', vertical: 'center' },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: '4472C4' } },
-                                        bottom: { style: 'thin', color: { rgb: '4472C4' } },
-                                        left: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        right: { style: 'thin', color: { rgb: 'D0D0D0' } }
-                                    }
-                                };
-                            }
-                            // Data rows - alternate colors with borders
-                            else if (R >= 3) {
-                                const isEven = R % 2 === 0;
-                                const offsetValue = itemsData[R][5];
-                                const hasDiscrepancy = offsetValue !== 0;
-
-                                itemsWs[cellAddress].s = {
-                                    font: {
-                                        sz: 10,
-                                        color: { rgb: hasDiscrepancy && C === 5 ? 'C00000' : '000000' },
-                                        bold: hasDiscrepancy && C === 5
-                                    },
-                                    fill: {
-                                        fgColor: {
-                                            rgb: hasDiscrepancy && C === 5 ? 'FFC7CE' :
-                                                   isEven ? 'FFFFFF' : 'F2F2F2'
-                                        }
-                                    },
-                                    alignment: {
-                                        horizontal: [3, 4, 5, 6, 7].includes(C) ? 'right' : 'left',
-                                        vertical: 'center'
-                                    },
-                                    border: {
-                                        top: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        bottom: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        left: { style: 'thin', color: { rgb: 'D0D0D0' } },
-                                        right: { style: 'thin', color: { rgb: 'D0D0D0' } }
-                                    }
-                                };
-                            }
-                        }
-                    }
-
-                    // Set column widths
-                    itemsWs['!cols'] = [
-                        { wch: 22 }, // Item Code
-                        { wch: 35 }, // Item Name
-                        { wch: 18 }, // Barcode
-                        { wch: 14 }, // Expected Qty
-                        { wch: 14 }, // Counted Qty
-                        { wch: 12 }, // Offset
-                        { wch: 14 }, // Buying Price
-                        { wch: 14 }, // Selling Price
-                        { wch: 10 }, // Scanned
-                        { wch: 22 }  // Scanned At
-                    ];
-
-                    XLSX.utils.book_append_sheet(wb, itemsWs, 'Items');
-
-                    // Generate and download
-                    const fileName = `${this.currentInventory.name || 'inventory'}_export_${frappe.datetime.now_date().replace(/-/g, '')}.xlsx`;
-                    XLSX.writeFile(wb, fileName);
-
-                    frappe.show_alert({
-                        message: __('Exported {0} items to Excel', [items.length]),
-                        indicator: 'green'
-                    });
                 },
 
                 /**
